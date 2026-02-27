@@ -38,7 +38,13 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.bg,
       bottomNavigationBar: BottomNavBar(
         selected: _selectedNav,
-        onTap: (i) => setState(() => _selectedNav = i),
+        onTap: (i) {
+          if (i == 2) {
+            Navigator.pushNamed(context, AppRoutes.favorite);
+          } else {
+            setState(() => _selectedNav = i);
+          }
+        },
       ),
       body: SafeArea(
         child: CustomScrollView(

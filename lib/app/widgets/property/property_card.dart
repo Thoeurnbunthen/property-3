@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../data/models/property_model.dart';
 import '../../../core/constants/app_color.dart';
 import '../../../routes/app_routes.dart';
+import '../../providers/favorite_provider.dart';
 
 class PropertyCard extends StatelessWidget {
   final PropertyModel property;
@@ -11,6 +13,8 @@ class PropertyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final favoriteProvider = context.watch<FavoriteProvider>();
+    final isFav = favoriteProvider.isFavorite(property);
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(
@@ -88,10 +92,14 @@ class PropertyCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        const Icon(
-                          Icons.bookmark_border,
-                          color: AppColors.grey,
-                          size: 18,
+                        GestureDetector(
+                          onTap: () =>
+                              favoriteProvider.toggleFavorite(property),
+                          child: Icon(
+                            isFav ? Icons.favorite : Icons.favorite_border,
+                            color: isFav ? Colors.red : AppColors.grey,
+                            size: 20,
+                          ),
                         ),
                       ],
                     ),
