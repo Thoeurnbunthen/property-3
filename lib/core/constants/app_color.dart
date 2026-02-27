@@ -7,4 +7,6 @@ class AppColors {
   static const white = Colors.white;
   static const grey = Color(0xFF9E9E9E);
   static const error = Color(0xFFE53935);
+  static const bg = Color(0xFFF7F8FC);
+  static const softBlue = Color(0xFFEEF2FF);
 }

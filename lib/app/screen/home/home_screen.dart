@@ -1,65 +1,215 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_color.dart';
+import '../../../data/models/property_model.dart';
 import '../../../routes/app_routes.dart';
 import '../../providers/auth_provider.dart';
+import '../../widgets/common/section_header.dart';
+import '../../widgets/common/category_chips.dart';
+import '../../widgets/common/bottom_navbar.dart';
+import '../../widgets/property/popular_card.dart';
+import '../../widgets/property/property_card.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedCategory = 0;
+  int _selectedNav = 0;
+
+  final List<String> categories = [
+    'All',
+    'House',
+    'Apartment',
+    'Villa',
+    'Condo',
+  ];
 
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
+    final popular = dummyProperties.where((p) => p.isPopular).toList();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: const Text(
-          'PropertyApp',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+      backgroundColor: AppColors.bg,
+      bottomNavigationBar: BottomNavBar(
+        selected: _selectedNav,
+        onTap: (i) => setState(() => _selectedNav = i),
+      ),
+      body: SafeArea(
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            // ── Header ──
+            SliverToBoxAdapter(
+              child: _buildHeader(auth.currentUser?.name ?? 'User'),
+            ),
+
+            // ── Search Bar ──
+            SliverToBoxAdapter(child: _buildSearchBar()),
+
+            // ── Most Popular Title ──
+            SliverToBoxAdapter(
+              child: SectionHeader(title: 'Most Popular', onSeeAll: () {}),
+            ),
+
+            // ── Popular Horizontal List ──
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 220,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  itemCount: popular.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 16),
+                  itemBuilder: (context, index) {
+                    return PopularCard(property: popular[index]);
+                  },
+                ),
+              ),
+            ),
+
+            // ── Category Chips ──
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 24),
+                child: CategoryChips(
+                  categories: categories,
+                  selected: _selectedCategory,
+                  onSelect: (i) => setState(() => _selectedCategory = i),
+                ),
+              ),
+            ),
+
+            // ── All Properties Title ──
+            SliverToBoxAdapter(
+              child: SectionHeader(title: 'All Properties', onSeeAll: () {}),
+            ),
+
+            // ── All Properties List ──
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => PropertyCard(
+                  property: dummyProperties[index],
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.detail,
+                      arguments: dummyProperties[index],
+                    );
+                  },
+                ),
+                childCount: dummyProperties.length,
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 20)),
+          ],
         ),
-        actions: [
-          // Logout button
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () {
-              auth.logout();
-              Navigator.pushReplacementNamed(context, AppRoutes.login);
-            },
+      ),
+    );
+  }
+
+  // ── Header Widget ──
+  Widget _buildHeader(String userName) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Good Morning 👋',
+                style: TextStyle(fontSize: 13, color: AppColors.grey),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                userName,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primary,
+                  letterSpacing: -0.5,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              // Notification
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.06),
+                      blurRadius: 10,
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    const Icon(
+                      Icons.notifications_outlined,
+                      color: AppColors.primary,
+                      size: 22,
+                    ),
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: AppColors.accent,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              // Avatar
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.person, color: Colors.white, size: 22),
+              ),
+            ],
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 10),
+    );
+  }
 
-            // Welcome message
-            Text(
-              'Welcome back,',
-              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
-            ),
-            Text(
-              auth.currentUser?.name ?? 'User',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w800,
-                color: AppColors.primary,
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Search bar
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+  // ── Search Bar Widget ──
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              height: 52,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.05),
@@ -69,161 +219,34 @@ class HomeScreen extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.search, color: Colors.grey[400]),
+                  const SizedBox(width: 16),
+                  const Icon(
+                    Icons.search_rounded,
+                    color: AppColors.grey,
+                    size: 20,
+                  ),
                   const SizedBox(width: 10),
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search property...',
-                        hintStyle: TextStyle(color: Colors.grey[400]),
-                        border: InputBorder.none,
-                      ),
-                    ),
+                  const Text(
+                    'Search property...',
+                    style: TextStyle(color: AppColors.grey, fontSize: 14),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
-
-            // Section title
-            const Text(
-              'Featured Properties',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: AppColors.primary,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Property list
-            Expanded(
-              child: ListView.separated(
-                physics: const BouncingScrollPhysics(),
-                itemCount: 4,
-                separatorBuilder: (_, __) => const SizedBox(height: 16),
-                itemBuilder: (context, index) {
-                  return _PropertyCard(index: index);
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ── Property Card Widget ──
-class _PropertyCard extends StatelessWidget {
-  final int index;
-
-  const _PropertyCard({required this.index});
-
-  final List<Map<String, dynamic>> properties = const [
-    {'name': 'Opera House', 'price': '\$99,80', 'bed': 5, 'bath': 2},
-    {'name': 'Villa Sunset', 'price': '\$120,00', 'bed': 4, 'bath': 3},
-    {'name': 'Modern Loft', 'price': '\$75,00', 'bed': 2, 'bath': 1},
-    {'name': 'Garden Cottage', 'price': '\$55,00', 'bed': 3, 'bath': 2},
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final property = properties[index];
-
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Image placeholder
+          const SizedBox(width: 12),
+          // Filter button
           Container(
-            width: 100,
-            height: 100,
+            width: 52,
+            height: 52,
             decoration: BoxDecoration(
-              color: const Color(0xFF4A90D9).withOpacity(0.2),
-              borderRadius: const BorderRadius.horizontal(
-                left: Radius.circular(18),
-              ),
+              color: AppColors.primary,
+              borderRadius: BorderRadius.circular(16),
             ),
             child: const Icon(
-              Icons.home_work_rounded,
-              color: Color(0xFF4A90D9),
-              size: 40,
-            ),
-          ),
-
-          // Details
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    property['name'],
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.bed_outlined,
-                        size: 14,
-                        color: Colors.grey[400],
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${property['bed']} Bed',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-                      ),
-                      const SizedBox(width: 12),
-                      Icon(
-                        Icons.bathtub_outlined,
-                        size: 14,
-                        color: Colors.grey[400],
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${property['bath']} Bath',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    property['price'],
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.accent,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Arrow
-          Padding(
-            padding: const EdgeInsets.only(right: 14),
-            child: Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 16,
-              color: Colors.grey[400],
+              Icons.tune_rounded,
+              color: Colors.white,
+              size: 22,
             ),
           ),
         ],

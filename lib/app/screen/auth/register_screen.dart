@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import '../../../core/constants/app_color.dart';
 import '../../../routes/app_routes.dart';
 import '../../providers/auth_provider.dart';
-import '../../widgets/custom_button.dart';
-import '../../widgets/custom_text_field.dart';
+import '../../widgets/common/custom_text_field.dart';
+import '../../widgets/common/custom_button.dart';
 
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
