@@ -9,7 +9,9 @@ import '../../widgets/common/custom_button.dart';
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
 
-  final _nameCtrl = TextEditingController();
+  final _fullnameCtrl = TextEditingController();
+  final _usernameCtrl = TextEditingController();
+  final _phonenumberCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
 
@@ -40,7 +42,19 @@ class RegisterScreen extends StatelessWidget {
               CustomTextField(
                 hint: 'Full Name',
                 icon: Icons.person_outline,
-                controller: _nameCtrl,
+                controller: _fullnameCtrl,
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                hint: 'User Name',
+                icon: Icons.alternate_email_rounded,
+                controller: _usernameCtrl,
+              ),
+              const SizedBox(height: 16),
+              CustomTextField(
+                hint: 'Phone Number',
+                icon: Icons.phone_outlined,
+                controller: _phonenumberCtrl,
               ),
               const SizedBox(height: 16),
               CustomTextField(
@@ -70,7 +84,9 @@ class RegisterScreen extends StatelessWidget {
                 isLoading: auth.isLoading,
                 onTap: () async {
                   final success = await auth.register(
-                    _nameCtrl.text,
+                    _fullnameCtrl.text,
+                    _usernameCtrl.text,
+                    _phonenumberCtrl.text,
                     _emailCtrl.text,
                     _passwordCtrl.text,
                   );

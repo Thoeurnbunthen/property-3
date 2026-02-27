@@ -10,13 +10,25 @@ class AuthProvider extends ChangeNotifier {
   String? errorMessage;
 
   // ── LOGIN ──
-  Future<bool> login(String email, String password) async {
+  Future<bool> register(
+    String fullname,
+    String username,
+    String phonenumber,
+    String email,
+    String password,
+  ) async {
     isLoading = true;
     errorMessage = null;
     notifyListeners();
 
     try {
-      currentUser = await _repo.login(email, password);
+      currentUser = await _repo.register(
+        fullname,
+        username,
+        phonenumber,
+        email,
+        password,
+      );
       isLoading = false;
       notifyListeners();
       return true; // success
@@ -29,23 +41,23 @@ class AuthProvider extends ChangeNotifier {
   }
 
   // ── REGISTER ──
-  Future<bool> register(String name, String email, String password) async {
-    isLoading = true;
-    errorMessage = null;
-    notifyListeners();
+  // Future<bool> register(String name, String email, String password) async {
+  //   isLoading = true;
+  //   errorMessage = null;
+  //   notifyListeners();
 
-    try {
-      currentUser = await _repo.register(name, email, password);
-      isLoading = false;
-      notifyListeners();
-      return true;
-    } catch (e) {
-      errorMessage = e.toString();
-      isLoading = false;
-      notifyListeners();
-      return false;
-    }
-  }
+  //   try {
+  //     currentUser = await _repo.register(name, email, password);
+  //     isLoading = false;
+  //     notifyListeners();
+  //     return true;
+  //   } catch (e) {
+  //     errorMessage = e.toString();
+  //     isLoading = false;
+  //     notifyListeners();
+  //     return false;
+  //   }
+  // }
 
   // ── LOGOUT ──
   void logout() {

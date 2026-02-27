@@ -20,7 +20,7 @@ class AppRoutes {
 
   static final routes = {
     splash: (context) => SplashScreen(),
-    login: (context) => LoginScreen(),
+    // login: (context) => LoginScreen(),
     register: (context) => RegisterScreen(),
     home: (context) => HomeScreen(),
     detail: (context) => DetailPropertyScreen(),

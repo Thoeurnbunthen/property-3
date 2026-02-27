@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../routes/app_routes.dart';
 
-
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -15,7 +14,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     // Auto navigate to login after 2 seconds
     Future.delayed(const Duration(seconds: 2), () {
-      Navigator.pushReplacementNamed(context, AppRoutes.login);
+      Navigator.pushReplacementNamed(context, AppRoutes.register);
     });
   }
 
