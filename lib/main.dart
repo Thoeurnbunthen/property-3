@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:property_then/app/providers/profile_provider.dart';
 import 'package:provider/provider.dart';
 import 'app/providers/auth_provider.dart';
 import 'routes/app_routes.dart';
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => FavoriteProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
       ],
       child: MaterialApp(
         title: 'Property App',

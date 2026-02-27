@@ -41,6 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: (i) {
           if (i == 2) {
             Navigator.pushNamed(context, AppRoutes.favorite);
+          } else if (i == 3) {
+            Navigator.pushNamed(context, AppRoutes.profile); // ← add this
           } else {
             setState(() => _selectedNav = i);
           }
@@ -188,14 +190,21 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(width: 10),
               // Avatar
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(12),
+              GestureDetector(
+                onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+                child: Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: 22,
+                  ),
                 ),
-                child: const Icon(Icons.person, color: Colors.white, size: 22),
               ),
             ],
           ),
